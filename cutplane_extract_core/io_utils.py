@@ -33,25 +33,48 @@ def select_folder(sol_dir: str) -> Tuple[np.ndarray, str, List[str]]:
     sol_dirs = np.unique(sol_dirs)
     return sol_dirs, arr_dir, arr
 
+def extract_index(basename: str) -> int:
+    """
+    Extracts the last integer from a basename.
+    If none is found, returns -1 so these appear first.
+    """
+    match = re.search(r'(\d+)(?!.*\d)', basename)  # last run of digits
+    return int(match.group(1)) if match else -1
+
+
 def sort_files(directory: str) -> List[str]:
     """
-    Sorts files in a directory based on their names, removing duplicates and unwanted files.
-    
+    Sorts solution files in a directory based on the timestep/index number
+    embedded in the filename, removing duplicates and unwanted files.
+
+    Steps:
+        - Lists all files in the directory
+        - Removes files containing 'sol_collection' or 'last_solution'
+        - Deduplicates by basename (filename without final extension)
+        - Extracts the numeric index from each basename
+        - Returns basenames sorted by that index
+
     Args:
-        directory (str): Directory path to list files from.
-    
+        directory (str): Path to the directory containing solution files.
+
     Returns:
-        List[str]: Sorted list of unique file basenames (without extension).
+        List[str]: Sorted list of unique file basenames (without extension),
+                   ordered by the numeric timestep/index.
     """
-    files = os.listdir(directory)
-    unique_files = set()
-    for fname in files:
-        base, _ = os.path.splitext(fname)
-        unique_files.add(base)
-    # Remove unwanted files (like sol_collection and last_solution)
-    filtered = [f for f in unique_files if 'sol_collection' not in f and 'last_solution' not in f]
-    filtered.sort()
-    return filtered
+    # List and filter out unwanted files
+    files = [
+        f for f in os.listdir(directory)
+        if 'sol_collection' not in f and 'last_solution' not in f
+    ]
+
+    # Remove extensions and deduplicate
+    unique_basenames = {os.path.splitext(fname)[0] for fname in files}
+
+    # Sort by the numeric timestep/index extracted from the filename
+    sorted_basenames = sorted(unique_basenames, key=extract_index)
+
+    return sorted_basenames
+
 
 def build_source_list(arr_dir: str, arr: List[str], n_start: int) -> Tuple[np.ndarray, int]:
     """
