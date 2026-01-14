@@ -9,7 +9,7 @@
 
 source /project/rrg-plavoie/Env/avbp_py_env.sh
 use_py_tools
-export PYTHONPATH="/scratch/denggua1/Bombardier_LES/B_10AOA_U50_LES/Isosurface/Extract_Cutplane_Medium:$PYTHONPATH"
+export PYTHONPATH="/scratch/denggua1/Bombardier_LES/B_10AOA_U50_LES/Isosurface/Extract_Cutplane_Fine:$PYTHONPATH"
 
 echo "Starting direct run of CutplaneExtract class with shell arguments..."
 
@@ -23,7 +23,6 @@ python -m cutplane_extract_core.cutplane_extract \
   --treatment "iso" \
   --isovar "Q" \
   --isovalue 2e6 \
-  --restart \
   --mesh_path "/project/rrg-moreaust-ac/denggua1/Bombardier_LES/B_10AOA_U50/MESH_Fine_Dec25" \
   --mesh_file "Bombardier_10AOA_U50_Combine_Fine.mesh.h5" \
   --sol_dir "/project/rrg-moreaust-ac/denggua1/Bombardier_LES/B_10AOA_U50/RUN_Fine/SOLUT/" \
